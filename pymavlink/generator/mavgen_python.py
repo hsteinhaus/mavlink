@@ -147,6 +147,14 @@ def generate_message_ids(outf, msgs):
     outf.write("MAVLINK_MSG_ID_BAD_DATA = -1\n")
     for m in msgs:
         outf.write("MAVLINK_MSG_ID_%s = %u\n" % (m.name.upper(), m.id))
+        
+        
+def generate_crc_extras(outf, msgs):
+    outf.write("\n#lookup table for extra crc byte\n")
+    outf.write("MAVLINK_CRC_EXTRA = {\n")
+    for m in msgs:
+        outf.write("        MAVLINK_MSG_ID_%s:%d,\n" % (m.name.upper(), m.crc_extra))
+    outf.write("}\n")
 
 def generate_classes(outf, msgs):
     print("Generating class definitions")
@@ -168,7 +176,7 @@ class MAVLink_%s_message(MAVLink_message):
                 outf.write("                self.%s = %s\n" % (f.name, f.name))
         outf.write("""
         def pack(self, mav):
-                return MAVLink_message.pack(self, mav, %u, struct.pack('%s'""" % (m.crc_extra, m.fmtstr))
+                return MAVLink_message.pack(self, mav, MAVLINK_CRC_EXTRA[MAVLINK_MSG_ID_%s], struct.pack('%s'""" % (m.name.upper(), m.fmtstr))
         if len(m.fields) != 0:
                 outf.write(", self." + ", self.".join(m.ordered_fieldnames))
         outf.write("))\n")
@@ -475,6 +483,7 @@ def generate(basename, xml):
     generate_preamble(outf, msgs, filelist, xml[0])
     generate_enums(outf, enums)
     generate_message_ids(outf, msgs)
+    generate_crc_extras(outf, msgs)
     generate_classes(outf, msgs)
     generate_mavlink_class(outf, msgs, xml[0])
     generate_methods(outf, msgs)

@@ -100,7 +100,7 @@ if __name__=="__main__":
 
     parser = OptionParser("%prog [options] <XML files>")
     parser.add_option("-o", "--output", dest="output", default="mavlink", help="output directory.")
-    parser.add_option("--lang", dest="language", default="Python", help="language of generated code: 'Python' or 'C' [default: %default]")
+    parser.add_option("--lang", dest="language", default="Python", help="language of generated code: 'Python', 'C' or 'wlua' [default: %default]")
     parser.add_option("--wire-protocol", dest="wire_protocol", default=mavparse.PROTOCOL_1_0, help="MAVLink protocol version: '0.9' or '1.0'. [default: %default]")
     parser.add_option("--error-limit", dest="error_limit", default=200, help="maximum number of validation errors.")
     (opts, args) = parser.parse_args()
